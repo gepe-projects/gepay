@@ -1,0 +1,6 @@
+# config
+config.yaml
+
+# dev
+tmp/
+.DS_*

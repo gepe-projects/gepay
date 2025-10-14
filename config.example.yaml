@@ -1,0 +1,30 @@
+server:
+  addr: "localhost"
+  port: "8888"
+  env: "development"
+
+jwt:
+  secret: "secret"
+  refresh_secret: "refresh-secret"
+  access_token_expires_in: 15m
+  refresh_token_expires_in: 720h
+
+database:
+  host: "localhost"
+  port: "5432"
+  user: "xxx"
+  password: "xxx"
+  database: "gepay"
+  max_open_conns: 20
+  max_idle_conns: 5
+  conn_max_lifetime: 15m
+  conn_max_idle_time: 10m
+
+redis:
+  host: "localhost"
+  port: "6379"
+  password: "xxx"
+
+
+
+
