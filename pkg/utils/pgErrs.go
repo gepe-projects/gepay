@@ -13,7 +13,6 @@ const (
 	ErrCodeUniqueViolation     = "23505"
 	ErrCodeForeignKeyViolation = "23503"
 	ErrCodeNotNullViolation    = "23502"
-	ErrCodeCheckViolation      = "23514"
 	ErrCodeExclusionViolation  = "23P01"
 )
 

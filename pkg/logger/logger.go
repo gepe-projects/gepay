@@ -13,7 +13,7 @@ type Logger struct {
 }
 
 func New(service string, config config.App) Logger {
-	if config.Server.Env == "dev" {
+	if config.Server.Env == "development" {
 		return consoleLogger(service)
 	} else {
 		return jsonLogger(service)
