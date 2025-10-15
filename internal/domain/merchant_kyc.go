@@ -6,34 +6,56 @@ import (
 	"github.com/google/uuid"
 )
 
-type MerchantKYC struct {
-	MerchantID uuid.UUID `db:"merchant_id" json:"merchant_id"`
-	KYCType    string    `db:"kyc_type" json:"kyc_type"` // 'personal' | 'business'
-
-	// Dokumen Identitas
-	IDCardNumber string  `db:"id_card_number" json:"id_card_number"`
-	IDCardURL    *string `db:"id_card_url" json:"id_card_url,omitempty"`
-	NPWPNumber   *string `db:"npwp_number" json:"npwp_number,omitempty"`
-	NPWPURL      *string `db:"npwp_url" json:"npwp_url,omitempty"`
+// ! TODO : implement file upload
+type MerchantKYCReq struct {
+	UserID       uuid.UUID
+	MerchantID   uuid.UUID
+	KYCType      string `json:"kyc_type" form:"kyc_type" binding:"required,oneof=personal business"`
+	IDCardNumber string `json:"id_card_number" form:"id_card_number" binding:"required,numeric,len=16"`
+	TaxIDNumber  string `json:"tax_id_number" form:"tax_id_number" binding:"required,numeric,len=16"`
+	// TaxIDImage   *multipart.FileHeader `json:"tax_id_image" form:"tax_id_image"`
 
 	// Legalitas Usaha (business only)
-	LegalBusinessName  *string `db:"legal_business_name" json:"legal_business_name,omitempty"`
-	BusinessLicenseNo  *string `db:"business_license_no" json:"business_license_no,omitempty"`
-	BusinessLicenseURL *string `db:"business_license_url" json:"business_license_url,omitempty"`
-	TaxIDNumber        *string `db:"tax_id_number" json:"tax_id_number,omitempty"`
-	TaxIDURL           *string `db:"tax_id_url" json:"tax_id_url,omitempty"`
-	DeedNumber         *string `db:"deed_number" json:"deed_number,omitempty"`
-	DeedURL            *string `db:"deed_url" json:"deed_url,omitempty"`
-	Address            *string `db:"address" json:"address,omitempty"`
-	WebsiteURL         *string `db:"website_url" json:"website_url,omitempty"`
+	LegalBusinessName     string
+	BusinessLicenseNumber string `json:"business_license_number" form:"business_license_number"`
+	// BusinessLicenseImage    *multipart.FileHeader `json:"business_license_image" form:"business_license_image" binding:"omitempty,required_if=KYCType business"`
+	DeedNumber string `json:"deed_number" form:"deed_number"`
+	// DeedImage  *multipart.FileHeader `json:"deed_image" form:"deed_image" binding:"omitempty,required_if=KYCType business"`
+	Address    string `json:"address" form:"address" binding:"required,max=255,min=8"`
+	WebsiteURL string `json:"website_url" form:"website_url"`
+}
 
-	// Status Verifikasi
-	Status          string     `db:"status" json:"status"`
-	RejectionReason *string    `db:"rejection_reason" json:"rejection_reason,omitempty"`
-	VerifiedAt      *time.Time `db:"verified_at" json:"verified_at,omitempty"`
-	ReviewedBy      *uuid.UUID `db:"reviewed_by" json:"reviewed_by,omitempty"`
+type MerchantKYC struct {
+	// BASIC & IDENTIFICATION
+	MerchantID uuid.UUID `json:"merchant_id" db:"merchant_id"`
+	KYCType    string    `json:"kyc_type" db:"kyc_type"` // 'personal' atau 'business'
 
-	Metadata  JSONB     `db:"metadata" json:"metadata"`
-	CreatedAt time.Time `db:"created_at" json:"created_at"`
-	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	// PERSONAL AND BUSINESS
+	IDCardNumber string `json:"id_card_number" db:"id_card_number"` // CHAR(16)
+	IDCardURL    string `json:"id_card_url" db:"id_card_url"`       // TEXT NOT NULL
+
+	// NPWP
+	TaxIDNumber *string `json:"tax_id_number" db:"tax_id_number"` // CHAR(15) (NPWP)
+	TaxIDURL    *string `json:"tax_id_url" db:"tax_id_url"`
+
+	// BUSINESS ONLY (NULLABLE)
+	LegalBusinessName     *string `json:"legal_business_name" db:"legal_business_name"`
+	BusinessLicenseNumber *string `json:"business_license_number" db:"business_license_number"` // VARCHAR(20) (NIB/ijin usaha)
+	BusinessLicenseURL    *string `json:"business_license_url" db:"business_license_url"`
+
+	DeedNumber *string `json:"deed_number" db:"deed_number"`
+	DeedURL    *string `json:"deed_url" db:"deed_url"`
+	Address    *string `json:"address" db:"address"`
+	WebsiteURL *string `json:"website_url" db:"website_url"`
+
+	// STATUS & METADATA
+	Status          string        `json:"status" db:"status"` // 'pending', 'in_review', 'verified', 'rejected'
+	RejectionReason *string       `json:"rejection_reason" db:"rejection_reason"`
+	VerifiedAt      *time.Time    `json:"verified_at" db:"verified_at"`
+	ReviewedBy      uuid.NullUUID `json:"reviewed_by" db:"reviewed_by"`
+
+	// TIMESTAMPS
+	Metadata  []byte    `json:"metadata" db:"metadata"` // JSONB di PostgreSQL
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }

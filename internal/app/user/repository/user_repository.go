@@ -67,8 +67,7 @@ func (r *userRepository) FindUserWithIdentityByEmail(ctx context.Context, email 
 	q := `
 	SELECT 
 		u.id AS "user.id",
-		u.first_name AS "user.first_name",
-		u.last_name AS "user.last_name",
+		u.name AS "user.name",
 		u.image_url AS "user.image_url",
 		u.role AS "user.role",
 		u.metadata AS "user.metadata",
@@ -108,8 +107,7 @@ func (r *userRepository) FindUserWithIdentityByID(ctx context.Context, id uuid.U
 	q := `
 	SELECT 
 		u.id AS "user.id",
-		u.first_name AS "user.first_name",
-		u.last_name AS "user.last_name",
+		u.name AS "user.name",
 		u.image_url AS "user.image_url",
 		u.role AS "user.role",
 		u.metadata AS "user.metadata",

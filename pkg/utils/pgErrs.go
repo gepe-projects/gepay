@@ -10,10 +10,10 @@ import (
 // https://www.postgresql.org/docs/current/errcodes-appendix.html
 
 const (
-	ErrCodeUniqueViolation     = "23505"
-	ErrCodeForeignKeyViolation = "23503"
-	ErrCodeNotNullViolation    = "23502"
-	ErrCodeExclusionViolation  = "23P01"
+	ErrCodeDuplicateUniqueViolation = "23505"
+	ErrCodeForeignKeyViolation      = "23503"
+	ErrCodeNotNullViolation         = "23502"
+	ErrCodeExclusionViolation       = "23P01"
 )
 
 // IsPgErrCode checks if the given error is a Postgres error with the specified code.
@@ -26,8 +26,8 @@ func IsPgErrCode(err error, code string) bool {
 }
 
 // IsUniqueViolation checks if the error is a unique constraint violation.
-func IsUniqueViolation(err error) bool {
-	return IsPgErrCode(err, ErrCodeUniqueViolation)
+func IsDuplicateUniqueViolation(err error) bool {
+	return IsPgErrCode(err, ErrCodeDuplicateUniqueViolation)
 }
 
 // IsForeignKeyViolation checks if the error is a foreign key constraint violation.

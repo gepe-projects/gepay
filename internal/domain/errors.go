@@ -16,7 +16,8 @@ var (
 	ErrUserNotFound      = errors.New("user not found")
 	ErrUserAlreadyExists = errors.New("user already exists")
 
-	ErrMerchantAlreadyExists = errors.New("merchant already exists")
+	ErrMerchantAlreadyExists    = errors.New("merchant already exists")
+	ErrMerchantKYCAlreadyExists = errors.New("merchant already KYC, please wait for approval")
 
 	// jwt error
 	ErrInvalidToken = errors.New("invalid token")
