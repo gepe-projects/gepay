@@ -3,17 +3,24 @@ package utils
 import (
 	"errors"
 	"fmt"
-	"strings"
+	"reflect"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func GenerateMessage(err error) map[string]any {
+func GenerateMessage(err error, structT reflect.Type) map[string]any {
 	var vErr validator.ValidationErrors
 	if errors.As(err, &vErr) {
 		messages := make(map[string]any, len(vErr))
 		for _, v := range vErr {
-			fieldName := strings.ToLower(v.Field())
+			var fieldName string
+			field, ok := structT.FieldByName(v.Field())
+			if !ok {
+				fieldName = v.Field()
+			} else {
+				fieldName = field.Tag.Get("json")
+			}
+
 			switch v.Tag() {
 			case "email":
 				messages[fieldName] = fmt.Sprintf("%s is not valid email", v.Value())

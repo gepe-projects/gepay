@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +35,7 @@ func NewAuthHandler(srv *gin.RouterGroup, authService domain.AuthService, mw *mi
 func (h *AuthHandler) signUp(c *gin.Context) {
 	var req domain.SignUpReq
 	if err := c.ShouldBind(&req); err != nil {
-		result := utils.GenerateMessage(err)
+		result := utils.GenerateMessage(err, reflect.TypeOf(req))
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "invalid request",
 			Errors:  result,
@@ -61,7 +62,7 @@ func (h *AuthHandler) signUp(c *gin.Context) {
 func (h *AuthHandler) signIn(c *gin.Context) {
 	var req domain.SignInReq
 	if err := c.ShouldBind(&req); err != nil {
-		result := utils.GenerateMessage(err)
+		result := utils.GenerateMessage(err, reflect.TypeOf(req))
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "invalid request",
 			Errors:  result,
