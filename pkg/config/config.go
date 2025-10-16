@@ -15,9 +15,10 @@ type App struct {
 }
 
 type Server struct {
-	Addr string `mapstructure:"addr"`
-	Port string `mapstructure:"port"`
-	Env  string `mapstructure:"env"`
+	Addr   string `mapstructure:"addr"`
+	Port   string `mapstructure:"port"`
+	Env    string `mapstructure:"env"`
+	Secret string `mapstructure:"secret"`
 }
 
 type JWT struct {

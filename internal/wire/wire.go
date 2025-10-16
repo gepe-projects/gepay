@@ -1,14 +1,12 @@
 package wire
 
 import (
-	authHandler "github.com/ilhamgepe/gepay/internal/app/auth/handler"
-	authService "github.com/ilhamgepe/gepay/internal/app/auth/service"
-	merchantHandler "github.com/ilhamgepe/gepay/internal/app/merchant/handler"
 	merchantRepo "github.com/ilhamgepe/gepay/internal/app/merchant/repository"
 	merchantService "github.com/ilhamgepe/gepay/internal/app/merchant/service"
-	userHandler "github.com/ilhamgepe/gepay/internal/app/user/handler"
 	userRepo "github.com/ilhamgepe/gepay/internal/app/user/repository"
 	userService "github.com/ilhamgepe/gepay/internal/app/user/service"
+	webappHandler "github.com/ilhamgepe/gepay/internal/app/webapp/handler"
+	webappService "github.com/ilhamgepe/gepay/internal/app/webapp/service"
 	"github.com/ilhamgepe/gepay/internal/server"
 	"github.com/ilhamgepe/gepay/internal/server/middleware"
 	"github.com/ilhamgepe/gepay/internal/server/security"
@@ -42,19 +40,25 @@ func InitializeApps() *Apps {
 	// service
 	merchantService := merchantService.NewMerchantService(merchantRepo, db, log)
 	userService := userService.NewUserService(userRepo, log)
-	authService := authService.NewAuthService(userService, merchantService, log, security, db, config)
+
+	webappService := webappService.NewWebappService(
+		userService, merchantService, log, security, db, config,
+	)
 
 	// server
-	server := server.NewServer(&config.Server, log)
-	v1 := server.App.Group("/api/v1")
+	server := server.NewServer(config, log)
+	// v1 := server.App.Group("/api/v1")
 
 	// middleware
 	mw := middleware.NewMiddlewares(rdb, security, config, log)
 
 	// handler
-	userHandler.NewUserHandler(v1.Group("/users", mw.WithAuth), userService, log)
-	authHandler.NewAuthHandler(v1.Group("/auth"), authService, mw, log)
-	merchantHandler.NewMerchantHandler(v1.Group("merchants"), merchantService, mw, log)
+	// -- WEBAPP --
+	webappHandler.NewWebappHandler(server.App, webappService, mw, log)
+
+	// userHandler.NewUserHandler(v1.Group("/users", mw.WithAuth), userService, log)
+	// authHandler.NewAuthHandler(v1.Group("/auth"), authService, mw, log)
+	// merchantHandler.NewMerchantHandler(v1.Group("merchants"), merchantService, mw, log)
 
 	return &Apps{
 		Server: server,

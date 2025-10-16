@@ -7,6 +7,11 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	SESSION_ID   = "session_id"
+	SESSION_ROLE = "session_role"
+)
+
 type AuthService interface {
 	Signin(ctx context.Context, req SignInReq) (SigninRes, error)
 	SignupLocal(ctx context.Context, req SignUpReq) error
@@ -20,12 +25,9 @@ type SignInReq struct {
 }
 
 type SigninRes struct {
-	Token         string `json:"token"`
-	Refresh_token string `json:"refresh_token"`
-	User          User   `json:"user"`
+	UserWithIdentity UserWithIdentity `json:"user_with_identity"`
 }
 type RefreshRes struct {
-	Token         string `json:"token"`
 	Refresh_token string `json:"refresh_token"`
 }
 

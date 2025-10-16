@@ -2,6 +2,7 @@ server:
   addr: "localhost"
   port: "8888"
   env: "development"
+  secret: "secret"
 
 jwt:
   secret: "secret"
