@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -56,11 +58,17 @@ func (mw *Middleware) WithSessionAuth(c *gin.Context) {
 	}
 
 	// memperpanjang lifetime session
-	// if err := session.Save(); err != nil {
-	// 	mw.log.Warnf("failed to extends session lifetime %v\n", err)
-	// }
+	sessionId := fmt.Sprintf("session_%s", session.ID())
 
-	mw.log.Infof("user: %s, role: %s", userID, Role)
+	sessionExpires, err := mw.rdb.TTL(c.Request.Context(), sessionId).Result()
+	if err == nil {
+		if sessionExpires < 30*time.Minute {
+			if err := mw.rdb.Expire(c.Request.Context(), sessionId, 1*time.Hour).Err(); err != nil {
+				mw.log.Error(err, "failed to extend session")
+			}
+		}
+	}
+
 	c.Set(domain.CtxUserIDKey, userID)
 	c.Next()
 }
